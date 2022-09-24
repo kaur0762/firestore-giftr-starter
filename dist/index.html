@@ -44,7 +44,7 @@
         </ul>
       </section>
     </main>
-    <section class="overlay active">
+    <section class="overlay ">
       <dialog id="dlgPerson" class="">
         <h2>Add Person</h2>
         <p>
@@ -76,7 +76,7 @@
           <button id="btnSavePerson">Save</button>
         </p>
       </dialog>
-      <dialog id="dlgIdea" class="active">
+      <dialog id="dlgIdea">
         <h2>Add Gift Idea</h2>
         <p>
           <label for="title">Title:</label>
@@ -100,6 +100,78 @@
           <button id="btnCancelIdea">Cancel</button>
           <button id="btnSaveIdea">Save</button>
         </p>
+      </dialog>
+    </section>
+    <section class="overlayPpl">
+      <dialog class="edit" id="editPerson">
+        <h2>Edit Person</h2>
+        <p>
+          <label for="name">Name:</label>
+          <input
+            type="text"
+            id="nameEdit"
+            name="name"
+            placeholder="person's name"
+          />
+        </p>
+        <p>
+          <label for="month">Birth Month:</label>
+          <input
+            type="number"
+            id="monthEdit"
+            name="month"
+            min="1"
+            max="12"
+            value="1"
+          />
+        </p>
+        <p>
+          <label for="day">Birth Day:</label>
+          <input type="number" id="dayEdit" name="day" min="1" max="31" value="1" />
+        </p>
+        <p>
+          <button id="btnCancel">Cancel</button>
+          <button id="btnSave">Save</button>
+        </p>
+      </dialog>
+      <dialog class="delete" id="deletePerson">
+        <h2>Delete Person</h2>
+        <p>Do you want to delete this person?</p>
+        <button id="btnCancel2">Cancel</button>
+        <button id="btnDelete">Delete</button>
+      </dialog>
+    </section>
+    <section class="overlayIdea">
+      <dialog class="editIdea" id="editIdea">
+        <h2>Save Gift Idea</h2>
+        <p>
+          <label for="title">Title:</label>
+          <input
+            type="text"
+            id="titleEdit"
+            name="title"
+            placeholder="describe the gift"
+          />
+        </p>
+        <p>
+          <label for="location">Location:</label>
+          <input
+            type="text"
+            id="locationEdit"
+            name="location"
+            placeholder="store or website"
+          />
+        </p>
+        <p>
+          <button id="btnCancelIdeas">Cancel</button>
+          <button id="btnSaveIdeas">Save</button>
+        </p>
+      </dialog>
+      <dialog class="deleteIdea" id="deleteIdea">
+        <h2>Delete Gift Idea</h2>
+        <p>Do you want to delete this gift idea?</p>
+        <button id="btnCancelIdeas2">Cancel</button>
+        <button id="btnDeleteIdeas">Delete</button>
       </dialog>
     </section>
   </body>
