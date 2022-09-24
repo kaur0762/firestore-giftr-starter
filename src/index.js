@@ -368,10 +368,6 @@ function deleteIdea(ev){
   hideOverlayIdea();
 };
 
-function cancelIdea(){
-  hideOverlayIdea();
-}
-
 function hideOverlayIdea(){
   document.querySelector('.overlayIdea').classList.remove('active');
   document

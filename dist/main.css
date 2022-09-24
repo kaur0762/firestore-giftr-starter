@@ -1,7 +1,7 @@
 :root {
-  --dark-orange: #f5820d;
-  --light-orange: #ffcb2a;
-  --very-light-orange: #ffeb9a;
+  --dark-color: #003840;
+  --light-color: #007369;
+  --very-light-color: #02A676;
   --radii: 0.4rem;
 }
 * {
@@ -22,19 +22,19 @@ main {
   padding: 1rem 4rem;
 }
 header {
-  background-color: var(--light-orange);
-  border-bottom: 0.1rem solid var(--dark-orange);
+  background-color: var(--light-color);
+  border-bottom: 0.1rem solid var(--dark-color);
 }
 header h1 {
   font-size: 4rem;
   font-weight: 500;
   color: #fff;
-  text-shadow: 2px 2px 2px var(--dark-orange);
+  text-shadow: 2px 2px 2px var(--dark-color);
 }
 header h2 {
   font-size: 2.5rem;
   font-weight: 300;
-  color: var(--dark-orange);
+  color: var(--dark-color);
 }
 main {
   display: flex;
@@ -50,20 +50,22 @@ main > section {
 section.ideas {
   min-height: 100vh;
   padding-left: 1rem;
-  border-left: 1px solid var(--light-orange);
+  border-left: 1px solid var(--light-color);
 }
 section h2 {
   font-size: 2rem;
-  color: var(--dark-orange);
+  color: var(--dark-color);
   display: flex;
   justify-content: space-between;
 }
 section h2 > button {
+  font-size: large;
   margin-right: 4rem;
+  margin-left: 1rem;
   padding: 0.1rem 2rem;
-  border: 1px solid var(--dark-orange);
-  background-color: #fff;
-  color: var(--dark-orange);
+  border: 1px solid var(--very-light-color);
+  background-color: var(--dark-color);
+  color: #fff;
   border-radius: var(--radii);
   cursor: pointer;
   -webkit-border-radius: var(--radii);
@@ -80,10 +82,11 @@ ul {
   cursor: pointer;
 }
 .person-list li.selected {
-  background-color: var(--light-orange);
+  background-color: var(--very-light-color);
 }
 .person-list p.name {
   font-size: 1.2rem;
+  font-weight: 400;
   line-height: 2rem;
   color: #222;
 }
@@ -91,42 +94,57 @@ ul {
   font-size: 0.8rem;
   line-height: 1rem;
   font-weight: 100;
-  color: #777;
+  color: var(--dark-color);
+}
+
+.person-list button{
+  font-size: large;
+  margin-right: 2rem;
+  margin-top: 0.2rem;
+  padding: 0.1rem 0.7rem;
+  border: 1px solid var(--very-light-color);
+  background-color: var(--dark-color);
+  color: #fff;
+  border-radius: var(--radii);
+  cursor: pointer;
 }
 
 .idea-list li.idea {
-  border: 1px solid #222;
-  border-radius: var(--radii);
+  border: 1px solid #005A5B;
+  /* border-radius: var(--radii); */
   margin: 1rem 0;
   display: grid;
   /*usenamedgridareas*/
   grid-template-areas: 'tab top' 'tab bottom';
   grid-template-columns: 1fr 4fr;
-  background-color: var(--very-light-orange);
-  -webkit-border-radius: var(--radii);
+  /* background-color: var(--very-light-color); */
+  /* -webkit-border-radius: var(--radii);
   -moz-border-radius: var(--radii);
   -ms-border-radius: var(--radii);
-  -o-border-radius: var(--radii);
+  -o-border-radius: var(--radii); */
 }
 .idea-list .idea label {
   font-size: 0.8rem;
   line-height: 1rem;
-  font-weight: 100;
+  font-weight: 150;
   padding: 0.5rem;
-  color: #222;
+  color: var(--dark-color);
   grid-area: tab;
   align-self: center;
+  border-right: 1px solid var(--dark-color);
 }
 .idea-list .idea label:has(input[type='checkbox']:checked) {
   color: #555;
 }
 .idea-list .idea [type='checkbox'] {
-  accent-color: var(--light-orange);
+  accent-color: var(--light-color);
 }
 .idea-list p.title {
   font-size: 1.2rem;
+  font-weight: 400;
   line-height: 2rem;
   padding: 0.5rem;
+  padding-left: 1rem;
   color: #222;
   background-color: #fff;
   border-top-right-radius: 0.3rem;
@@ -134,13 +152,27 @@ ul {
 }
 .idea-list p.location {
   font-size: 1rem;
+  font-weight: 300;
   line-height: 1rem;
   padding: 0.5rem;
+  padding-left: 1rem;
   font-weight: 100;
   color: #555;
   background-color: #fff;
   border-bottom-right-radius: 0.3rem;
   grid-area: bottom;
+}
+
+.idea-list button{
+  font-size: large;
+  margin: 0.2rem;
+  margin-right: 2rem;
+  padding: 0.1rem 0.7rem;
+  border: 1px solid var(--very-light-color);
+  background-color: var(--dark-color);
+  color: #fff;
+  border-radius: var(--radii);
+  cursor: pointer;
 }
 
 section.overlay {
@@ -170,7 +202,7 @@ dialog.active {
   height: 60vh;
 }
 dialog.active h2 {
-  background-color: var(--dark-orange);
+  background-color: var(--dark-color);
   color: #fff;
   padding: 1rem 3rem;
   font-size: 2rem;
@@ -195,14 +227,14 @@ dialog.active :is(input, button) {
 dialog button {
   margin: 0 2rem;
   padding: 0.1rem 2rem;
-  border: 1px solid var(--dark-orange);
+  border: 1px solid var(--dark-color);
   background-color: #fff;
-  color: var(--dark-orange);
+  color: var(--dark-color);
   border-radius: var(--radii);
   cursor: pointer;
 }
 :is(dialog, h2) button:active {
-  background-color: var(--light-orange);
+  background-color: var(--light-color);
 }
 
 section.overlayPpl {
