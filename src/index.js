@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .getElementById('btnAddPerson')
     .addEventListener('click', showOverlay);
   document.getElementById('btnAddIdea').addEventListener('click', showOverlay);
+  document.getElementById('btnSignIn').addEventListener('click', showOverlay);
 
   document
     .getElementById('btnSavePerson')
@@ -383,7 +384,9 @@ function hideOverlay(ev) {
     ev.target.id != 'btnCancelIdea' &&
     ev.target.id != 'btnCancelPerson' &&
     ev.target.id != 'btnSavePerson' &&
-    ev.target.id != 'btnSaveIdea'
+    ev.target.id != 'btnSaveIdea' &&
+    ev.target.id != 'btnSign' &&
+    ev.target.id != 'btnCancelSignIn'
   ) return;
 
   document.querySelector('.overlay').classList.remove('active');
@@ -394,7 +397,13 @@ function hideOverlay(ev) {
 function showOverlay(ev) {
   ev.preventDefault();
   document.querySelector('.overlay').classList.add('active');
-  const id = ev.target.id === 'btnAddPerson' ? 'dlgPerson' : 'dlgIdea';
-  //TODO: check that person is selected before adding an idea
-  document.getElementById(id).classList.add('active');
+  if(ev.target.id === 'btnAddPerson'){
+    document.getElementById('dlgPerson').classList.add('active');
+  } else if(ev.target.id === 'btnAddIdea'){
+    document.getElementById('dlgIdea').classList.add('active');
+  } else if(ev.target.id === 'btnSignIn'){
+    document.getElementById('dlgSignIn').classList.add('active');
+  } 
 }
+
+/* CODE FOR SIGNIN */

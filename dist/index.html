@@ -11,7 +11,10 @@
   <body>
     <header>
       <h1>Fire-Giftr</h1>
-      <h2>All Gifts Must Go!</h2>
+      <div>
+        <h2>All Gifts Must Go!</h2>
+        <button id="btnSignIn">Sign In</button>
+      </div>
     </header>
     <main>
       <section class="people">
@@ -44,7 +47,7 @@
         </ul>
       </section>
     </main>
-    <section class="overlay ">
+    <section class="overlay">
       <dialog id="dlgPerson" class="">
         <h2>Add Person</h2>
         <p>
@@ -99,6 +102,31 @@
         <p>
           <button id="btnCancelIdea">Cancel</button>
           <button id="btnSaveIdea">Save</button>
+        </p>
+      </dialog>
+      <dialog id="dlgSignIn">
+        <h2>SignIn with Github Account</h2>
+        <p>
+          <label for="email">Email:</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Email"
+          />
+        </p>
+        <p>
+          <label for="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Password"
+          />
+        </p>
+        <p>
+          <button id="btnSign">SignIn</button>
+          <button id="btnCancelSignIn">Cancel</button>
         </p>
       </dialog>
     </section>
