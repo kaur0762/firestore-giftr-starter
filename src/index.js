@@ -53,12 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('.idea-list').addEventListener('click', handleSelectIdea);
   document.getElementById('btnSignIn').addEventListener('click', handleSignIn);
   // handleSelectIdea();
-  loadData();
+  // loadData();
 });
 
-function loadData(){
-  getPeople();
-}
+// function loadData(){
+//   getPeople();
+// }
 
 /* CODE FOR PEOPLE */
 
@@ -441,6 +441,7 @@ onAuthStateChanged(auth, (user) => {
     const uid = user.uid;
     // ...
     console.log("loged in");
+    getPeople();
   } else {
     // User is signed out
     // ...
