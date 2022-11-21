@@ -440,12 +440,12 @@ onAuthStateChanged(auth, (user) => {
     // https://firebase.google.com/docs/reference/js/firebase.User
     const uid = user.uid;
     // ...
-    console.log("loged in");
+    console.log("logged in");
     getPeople();
   } else {
     // User is signed out
     // ...
-    console.log("loged out");
+    console.log("logged out");
   }
 });
 
