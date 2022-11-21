@@ -1,6 +1,7 @@
 import { async } from '@firebase/util';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, query, where, doc, getDocs, getDoc, addDoc, setDoc, orderBy, onSnapshot, deleteDoc, updateDoc } from 'firebase/firestore';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, GithubAuthProvider, setPersistence, browserSessionPersistence, signInWithRedirect, getRedirectResult, signInWithCredential } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCtjyPJ7LqQUQZgiy1uxYcTPAj_p6zE4WM",
@@ -12,14 +13,20 @@ const firebaseConfig = {
   measurementId: "G-7M8WRM3NZ2"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-// get a reference to the database
 const db = getFirestore(app);
 const people = [];
 const ideas = [];
 let selectedPersonId = null;
 let selectedIdeaId = null;
+
+const auth = getAuth(app);
+const user = auth.currentUser;
+auth.languageCode = 'en';
+const provider = new GithubAuthProvider();
+provider.setCustomParameters({
+  'allow_signup': 'true',
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   //set up the dom events
@@ -44,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelector('.person-list').addEventListener('click', handleSelectPerson);
   document.querySelector('.idea-list').addEventListener('click', handleSelectIdea);
+  document.getElementById('btnSignIn').addEventListener('click', handleSignIn);
   // handleSelectIdea();
   loadData();
 });
@@ -240,7 +248,7 @@ async function getIdeas(id){
     const id = docs.id;
     //person_id is a reference type
     //we want the actual id string in our object use id to get the _id
-    console.log(data['person-id']);
+    // console.log(data['person-id']);
     ideas.push({id, 
       title: data.title,
       location: data.location,
@@ -407,3 +415,107 @@ function showOverlay(ev) {
 }
 
 /* CODE FOR SIGNIN */
+function handleSignIn(){
+  document.getElementById('btnSign').addEventListener('click', attemptLogin);
+}
+
+// URL to request github user's identity
+// GET https://github.com/login/oauth/authorize
+
+//to be used inside a function 
+if(user !== null){
+  //user is logged in
+  const displayName = user.displayName;
+  const email = user.email;
+  const photoURL = user.photoURL;
+  const emailVerified = user.emailVerified;
+}else{
+  //user is not logged in 
+}
+
+//pass in your auth object plus the email and password strings
+createUserWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ..
+  });
+
+//pass in your auth object plus the email and password strings
+signInWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+  });
+
+//track when the user logs in or out 
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // User is signed in, see docs for a list of available properties
+    // https://firebase.google.com/docs/reference/js/firebase.User
+    const uid = user.uid;
+    // ...
+    console.log("looged in");
+  } else {
+    // User is signed out
+    // ...
+    console.log("looged out");
+  }
+});
+
+function attemptLogin(signInWithPopup){
+  //try to login with the global auth and provider objects
+  setPersistence(auth, browserSessionPersistence)
+  .then(() => {
+    // Existing and future Auth states are now persisted in the current
+    // session only. Closing the window would clear any existing state even
+    // if a user forgets to sign out.
+    const provider = new GithubAuthProvider();
+    // ...
+    // New sign-in will be persisted with session persistence.
+    signInWithPopup(auth, provider)
+    .then((result) => {
+      console.log(result);
+      //IF YOU USED GITHUB PROVIDER 
+      const credential = GithubAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+      window.sessionStorage.setItem("gitToken", JSON.stringify(token))
+
+      // The signed-in user info.
+      const user = result.user;
+      console.log(`name: ${user.displayName}`)
+      // ...
+    }).catch((error) => {
+      console.log(error.message);
+    }); 
+    //return the call to your desired login method
+  })
+  .catch((error) => {
+    // Handle Errors here.
+      console.log(error);
+  });
+}
+
+function validateWithToken(token){
+  const credential = GithubAuthProvider.credential(token);
+  signInWithCredential(auth, credential)
+    .then((result) => {
+      //the token and credential were still valid 
+      console.log(result);
+    })
+    .catch((error) => {
+      // Handle Errors here.
+      const errorMessage = error.message;
+      console.log(errorMessage);
+    })
+}

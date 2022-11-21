@@ -156,9 +156,9 @@ ul {
 .idea-list .idea label:has(input[type='checkbox']:checked) {
   color: #555;
 }
-.idea-list .idea [type='checkbox'] {
+/* .idea-list .idea [type='checkbox'] {
   accent-color: var(--light-color);
-}
+} */
 .idea-list p.title {
   font-size: 1.2rem;
   font-weight: 400;
