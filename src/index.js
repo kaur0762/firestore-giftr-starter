@@ -433,31 +433,6 @@ if(user !== null){
   //user is not logged in 
 }
 
-//pass in your auth object plus the email and password strings
-createUserWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    // Signed in 
-    const user = userCredential.user;
-    // ...
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ..
-  });
-
-//pass in your auth object plus the email and password strings
-signInWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    // Signed in 
-    const user = userCredential.user;
-    // ...
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-  });
-
 //track when the user logs in or out 
 onAuthStateChanged(auth, (user) => {
   if (user) {
@@ -465,11 +440,11 @@ onAuthStateChanged(auth, (user) => {
     // https://firebase.google.com/docs/reference/js/firebase.User
     const uid = user.uid;
     // ...
-    console.log("looged in");
+    console.log("loged in");
   } else {
     // User is signed out
     // ...
-    console.log("looged out");
+    console.log("loged out");
   }
 });
 
