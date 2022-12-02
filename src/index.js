@@ -1,7 +1,7 @@
 import { async } from '@firebase/util';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, query, where, doc, getDocs, getDoc, addDoc, setDoc, orderBy, onSnapshot, deleteDoc, updateDoc } from 'firebase/firestore';
-import { getAuth, signInWithPopup, signOut,createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, GithubAuthProvider, setPersistence, browserSessionPersistence, signInWithRedirect, getRedirectResult, signInWithCredential } from "firebase/auth";
+import { getAuth, signInWithPopup, signOut,createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, GithubAuthProvider, setPersistence, browserSessionPersistence, signInWithRedirect, getRedirectResult, signInWithCredential} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCtjyPJ7LqQUQZgiy1uxYcTPAj_p6zE4WM",
@@ -63,9 +63,15 @@ function loadData(){
 /* CODE FOR PEOPLE */
 
 async function getPeople(){
+  const userRef = getUser();
   //call this from DOMContentLoaded init function 
   //the db variable is the one created by the getFirestore(app) call.
-  const querySnapshot = await getDocs(collection(db, 'people'));
+  const peopleCollectionRef = collection(db, "people"); //collection we want to query
+  const docs = query(
+    peopleCollectionRef,
+    where('owner', '==', userRef)
+  );
+  const querySnapshot = await getDocs(docs);
   querySnapshot.forEach((doc) => {
     //every `doc` object has a `id` property that holds the `_id` value from Firestore.
     //every `doc` object has a doc() method that gives you a JS object with all the properties
@@ -446,6 +452,10 @@ function attemptLogin(){
       const token = credential.accessToken;
 
       const user = result.user;
+      const usersColRef = collection(db, 'users');
+      setDoc(doc(usersColRef, user.uid), {
+        displayName: user.displayName
+      }, {merge:true}); 
       // ...
     }).catch((error) => {
       const errorCode = error.code;
@@ -471,4 +481,9 @@ if(user !== null){
   const emailVerified = user.emailVerified;
 }else{
   //user is not logged in 
+}
+
+async function getUser() {
+  const ref = doc(db, "users", FirebaseAuth.instance.currentUser.uid);
+  return ref; //if you need the user reference
 }
