@@ -52,14 +52,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelector('.person-list').addEventListener('click', handleSelectPerson);
   document.querySelector('.idea-list').addEventListener('click', handleSelectIdea);
-  document.getElementById('btnSignIn').addEventListener('click', attemptLogin);
+  document.getElementById('btnSignIn').addEventListener('click', handleSignIn);
   // handleSelectIdea();
   // loadData();
 });
 
-function loadData(){
-  getPeople();
-}
+// function loadData(){
+//   getPeople();
+// }
 
 /* CODE FOR PEOPLE */
 
@@ -410,35 +410,39 @@ function showOverlay(ev) {
     document.getElementById('dlgPerson').classList.add('active');
   } else if(ev.target.id === 'btnAddIdea'){
     document.getElementById('dlgIdea').classList.add('active');
-  // } else if(ev.target.id === 'btnSignIn'){
-  //   document.getElementById('dlgSignIn').classList.add('active');
+  } else if(ev.target.id === 'btnSignIn'){
+    document.getElementById('dlgSignIn').classList.add('active');
   } 
 }
 
 /* CODE FOR SIGNIN */
-function attemptLogin(){
-  //try to login with the global auth and provider objects
-  signInWithPopup(auth, provider)
-    .then((result) => {
+// const auth = getAuth();
 
-      //IF YOU USED GITHUB PROVIDER 
-      const credential = GithubAuthProvider.credentialFromResult(result);
-      const token = credential.accessToken;
+signOut(auth)
+  .then(() => {
+    // Sign-out successful.
+    console.log("out")
+  }).catch((error) => {
+    // An error happened.
+  });
+  
 
-      // The signed-in user info.
-      const user = result.user;
-      // ...
-    }).catch((error) => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // The email of the user's account used.
-      const email = error.customData.email;
-      const credential = GithubAuthProvider.credentialFromError(error);
-    });
+
+  const credential = GithubAuthProvider.credential(token);
+
+
+
+
+function handleSignIn(){
+  document.getElementById('btnSign').addEventListener('click', attemptLogin);
 }
 
+// URL to request github user's identity
+// GET https://github.com/login/oauth/authorize
+
+//to be used inside a function 
 if(user !== null){
+  //user is logged in
   const displayName = user.displayName;
   const email = user.email;
   const photoURL = user.photoURL;
@@ -447,15 +451,70 @@ if(user !== null){
   //user is not logged in 
 }
 
+//track when the user logs in or out 
 onAuthStateChanged(auth, (user) => {
   if (user) {
     // User is signed in, see docs for a list of available properties
     // https://firebase.google.com/docs/reference/js/firebase.User
     const uid = user.uid;
     // ...
-    loadData();
+    console.log("logged in");
+    getPeople();
   } else {
     // User is signed out
     // ...
+    console.log("logged out");
   }
 });
+
+function attemptLogin(signInWithPopup){
+  //try to login with the global auth and provider objects
+  setPersistence(auth, browserSessionPersistence)
+  .then(() => {
+    // Existing and future Auth states are now persisted in the current
+    // session only. Closing the window would clear any existing state even
+    // if a user forgets to sign out.
+    const provider = new GithubAuthProvider();
+    // ...
+    // New sign-in will be persisted with session persistence.
+    signInWithPopup(auth, provider)
+  .then((result) => {
+    // This gives you a GitHub Access Token. You can use it to access the GitHub API.
+    const credential = GithubAuthProvider.credentialFromResult(result);
+    const token = credential.accessToken;
+    console.log("in")
+
+    // The signed-in user info.
+    const user = result.user;
+    // ...
+  }).catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.customData.email;
+    // The AuthCredential type that was used.
+    const credential = GithubAuthProvider.credentialFromError(error);
+    // ...
+  });
+    //return the call to your desired login method
+  })
+  .catch((error) => {
+    // Handle Errors here.
+      console.log(error);
+  });
+}
+
+// function validateWithToken(token){
+//   const credential = GithubAuthProvider.credential(token);
+//   signInWithCredential(auth, credential)
+//     .then((result) => {
+//       //the token and credential were still valid 
+//       console.log(result);
+//     })
+//     .catch((error) => {
+//       // Handle Errors here.
+//       const errorMessage = error.message;
+//       console.log(errorMessage);
+//     })
+// }
