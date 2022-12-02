@@ -52,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelector('.person-list').addEventListener('click', handleSelectPerson);
   document.querySelector('.idea-list').addEventListener('click', handleSelectIdea);
-  document.getElementById('btnSignIn').addEventListener('click', attemptLogin);
   // handleSelectIdea();
   // loadData();
 });
@@ -416,26 +415,53 @@ function showOverlay(ev) {
 }
 
 /* CODE FOR SIGNIN */
+
+onAuthStateChanged(auth, (user) => {
+  const btn = document.querySelector('#btnSignIn')
+  if (user) {
+    // User is signed in
+    const uid = user.uid;
+
+    loadData();
+
+    console.log("signed in")
+
+    btn.textContent = 'Sign Out';
+    btn.addEventListener('click', attemptLogout);
+  } else {
+    // User is signed out
+    // ...
+    console.log("signed out")
+
+    btn.textContent = 'Sign In';
+    btn.addEventListener('click', attemptLogin);
+  }
+});
+
 function attemptLogin(){
-  //try to login with the global auth and provider objects
   signInWithPopup(auth, provider)
     .then((result) => {
 
-      //IF YOU USED GITHUB PROVIDER 
       const credential = GithubAuthProvider.credentialFromResult(result);
       const token = credential.accessToken;
 
-      // The signed-in user info.
       const user = result.user;
       // ...
     }).catch((error) => {
-      // Handle Errors here.
       const errorCode = error.code;
       const errorMessage = error.message;
-      // The email of the user's account used.
       const email = error.customData.email;
       const credential = GithubAuthProvider.credentialFromError(error);
     });
+}
+
+function attemptLogout(){
+  signOut(auth)
+  .then(() => {
+    // Sign-out successful.
+  }).catch((error) => {
+    // An error happened.
+  });
 }
 
 if(user !== null){
@@ -446,16 +472,3 @@ if(user !== null){
 }else{
   //user is not logged in 
 }
-
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // User is signed in, see docs for a list of available properties
-    // https://firebase.google.com/docs/reference/js/firebase.User
-    const uid = user.uid;
-    // ...
-    loadData();
-  } else {
-    // User is signed out
-    // ...
-  }
-});
