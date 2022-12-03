@@ -1,7 +1,7 @@
 import { async } from '@firebase/util';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, query, where, doc, getDocs, addDoc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { getAuth, signInWithPopup, signOut,onAuthStateChanged, GithubAuthProvider} from "firebase/auth";
+import { getFirestore, collection, query, where, doc, getDocs, getDoc, addDoc, setDoc, orderBy, onSnapshot, deleteDoc, updateDoc } from 'firebase/firestore';
+import { getAuth, signInWithPopup, signOut,createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, GithubAuthProvider, setPersistence, browserSessionPersistence, signInWithRedirect, getRedirectResult, signInWithCredential} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCtjyPJ7LqQUQZgiy1uxYcTPAj_p6zE4WM",
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .getElementById('btnAddPerson')
     .addEventListener('click', showOverlay);
   document.getElementById('btnAddIdea').addEventListener('click', showOverlay);
-  document.getElementById('btnSignIn').addEventListener('click', showOverlay);
+  // document.getElementById('btnSignIn').addEventListener('click', showOverlay);
 
   document
     .getElementById('btnSavePerson')
@@ -64,8 +64,8 @@ function loadData(){
 
 async function getPeople(){
   const userRef = await getUser();
-  // console.log(userRef);
-  // console.log(people);
+  console.log(userRef);
+  console.log(people);
   //call this from DOMContentLoaded init function 
   //the db variable is the one created by the getFirestore(app) call.
   // const peopleCollectionRef = collection(db, "people"); //collection we want to query
@@ -73,12 +73,12 @@ async function getPeople(){
     collection(db,"people"),
     where('owner', '==', userRef)
   );
-  // console.log("Docs", docs)
+  console.log("Docs", docs)
   // const querySnapshot = await getDocs(docs);
   const querySnapshot = await getDocs(collection(db, 'people'),where('owner','==',userRef));
-  // console.log("q ",querySnapshot)
+  console.log("q ",querySnapshot)
   querySnapshot.forEach((doc) => {
-    // console.log("doc ",doc)
+    console.log("doc ",doc)
     //every `doc` object has a `id` property that holds the `_id` value from Firestore.
     //every `doc` object has a doc() method that gives you a JS object with all the properties
     const data = doc.data();
@@ -90,8 +90,8 @@ async function getPeople(){
     selectedPersonId = buildPeople(people);
   }
 
-  let li = document.querySelector(`[data-id="${selectedPersonId}"]`);
-  li.click();
+  // let li = document.querySelector(`[data-id="${selectedPersonId}"]`);
+  // li.click();
 }
 
 function buildPeople(people){
@@ -109,7 +109,7 @@ function buildPeople(people){
             <button class="delete"> Delete </button>
           </li>`;
   }).join('');
-console.log(people[0])
+
   let selected = people[0].id;
   return selected;
 }
@@ -407,9 +407,7 @@ function hideOverlay(ev) {
     ev.target.id != 'btnCancelIdea' &&
     ev.target.id != 'btnCancelPerson' &&
     ev.target.id != 'btnSavePerson' &&
-    ev.target.id != 'btnSaveIdea' &&
-    ev.target.id != 'btnSign' &&
-    ev.target.id != 'btnCancelSignIn'
+    ev.target.id != 'btnSaveIdea' 
   ) return;
 
   document.querySelector('.overlay').classList.remove('active');
@@ -436,7 +434,7 @@ onAuthStateChanged(auth, (user) => {
   if (user) {
     // User is signed in
     const uid = user.uid;
-    
+
     loadData();
 
     console.log("signed in")
