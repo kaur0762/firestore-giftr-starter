@@ -1,6 +1,7 @@
 import { async } from '@firebase/util';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, query, where, doc, getDocs, getDoc, addDoc, setDoc, orderBy, onSnapshot, deleteDoc, updateDoc } from 'firebase/firestore';
+import { getFirestore, collection, query, where, doc, getDocs, addDoc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { getAuth, signInWithPopup, signOut,onAuthStateChanged, GithubAuthProvider} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCtjyPJ7LqQUQZgiy1uxYcTPAj_p6zE4WM",
@@ -12,14 +13,21 @@ const firebaseConfig = {
   measurementId: "G-7M8WRM3NZ2"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-// get a reference to the database
 const db = getFirestore(app);
 const people = [];
 const ideas = [];
 let selectedPersonId = null;
 let selectedIdeaId = null;
+
+const auth = getAuth(app);
+const user = auth.currentUser;
+auth.languageCode = 'en';
+const provider = new GithubAuthProvider();
+provider.addScope('repo');
+provider.setCustomParameters({
+  'allow_signup': 'false',
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   //set up the dom events
@@ -35,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .getElementById('btnAddPerson')
     .addEventListener('click', showOverlay);
   document.getElementById('btnAddIdea').addEventListener('click', showOverlay);
+  document.getElementById('btnSignIn').addEventListener('click', showOverlay);
 
   document
     .getElementById('btnSavePerson')
@@ -44,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('.person-list').addEventListener('click', handleSelectPerson);
   document.querySelector('.idea-list').addEventListener('click', handleSelectIdea);
   // handleSelectIdea();
-  loadData();
+  // loadData();
 });
 
 function loadData(){
@@ -54,17 +63,32 @@ function loadData(){
 /* CODE FOR PEOPLE */
 
 async function getPeople(){
+  const userRef = await getUser();
+  // console.log(userRef);
+  // console.log(people);
   //call this from DOMContentLoaded init function 
   //the db variable is the one created by the getFirestore(app) call.
-  const querySnapshot = await getDocs(collection(db, 'people'));
+  // const peopleCollectionRef = collection(db, "people"); //collection we want to query
+  const docs = query(
+    collection(db,"people"),
+    where('owner', '==', userRef)
+  );
+  // console.log("Docs", docs)
+  // const querySnapshot = await getDocs(docs);
+  const querySnapshot = await getDocs(collection(db, 'people'),where('owner','==',userRef));
+  // console.log("q ",querySnapshot)
   querySnapshot.forEach((doc) => {
+    // console.log("doc ",doc)
     //every `doc` object has a `id` property that holds the `_id` value from Firestore.
     //every `doc` object has a doc() method that gives you a JS object with all the properties
     const data = doc.data();
     const id = doc.id;
     people.push({id, ...data});
   });
-  selectedPersonId = buildPeople(people);
+  console.log(people)
+  if(people.length>0){
+    selectedPersonId = buildPeople(people);
+  }
 
   let li = document.querySelector(`[data-id="${selectedPersonId}"]`);
   li.click();
@@ -85,7 +109,7 @@ function buildPeople(people){
             <button class="delete"> Delete </button>
           </li>`;
   }).join('');
-
+console.log(people[0])
   let selected = people[0].id;
   return selected;
 }
@@ -239,7 +263,7 @@ async function getIdeas(id){
     const id = docs.id;
     //person_id is a reference type
     //we want the actual id string in our object use id to get the _id
-    console.log(data['person-id']);
+    // console.log(data['person-id']);
     ideas.push({id, 
       title: data.title,
       location: data.location,
@@ -383,7 +407,9 @@ function hideOverlay(ev) {
     ev.target.id != 'btnCancelIdea' &&
     ev.target.id != 'btnCancelPerson' &&
     ev.target.id != 'btnSavePerson' &&
-    ev.target.id != 'btnSaveIdea'
+    ev.target.id != 'btnSaveIdea' &&
+    ev.target.id != 'btnSign' &&
+    ev.target.id != 'btnCancelSignIn'
   ) return;
 
   document.querySelector('.overlay').classList.remove('active');
@@ -394,7 +420,80 @@ function hideOverlay(ev) {
 function showOverlay(ev) {
   ev.preventDefault();
   document.querySelector('.overlay').classList.add('active');
-  const id = ev.target.id === 'btnAddPerson' ? 'dlgPerson' : 'dlgIdea';
-  //TODO: check that person is selected before adding an idea
-  document.getElementById(id).classList.add('active');
+  if(ev.target.id === 'btnAddPerson'){
+    document.getElementById('dlgPerson').classList.add('active');
+  } else if(ev.target.id === 'btnAddIdea'){
+    document.getElementById('dlgIdea').classList.add('active');
+  // } else if(ev.target.id === 'btnSignIn'){
+  //   document.getElementById('dlgSignIn').classList.add('active');
+  } 
+}
+
+/* CODE FOR SIGNIN */
+
+onAuthStateChanged(auth, (user) => {
+  const btn = document.querySelector('#btnSignIn')
+  if (user) {
+    // User is signed in
+    const uid = user.uid;
+    
+    loadData();
+
+    console.log("signed in")
+
+    btn.textContent = 'Sign Out';
+    btn.addEventListener('click', attemptLogout);
+  } else {
+    // User is signed out
+    // ...
+    console.log("signed out")
+
+    btn.textContent = 'Sign In';
+    btn.addEventListener('click', attemptLogin);
+  }
+});
+
+function attemptLogin(){
+  signInWithPopup(auth, provider)
+    .then((result) => {
+
+      const credential = GithubAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+
+      const user = result.user;
+      const usersColRef = collection(db, 'users');
+      setDoc(doc(usersColRef, user.uid), {
+        displayName: user.displayName
+      }, {merge:true}); 
+      // ...
+    }).catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      const email = error.customData.email;
+      const credential = GithubAuthProvider.credentialFromError(error);
+    });
+}
+
+function attemptLogout(){
+  signOut(auth)
+  .then(() => {
+    // Sign-out successful.
+  }).catch((error) => {
+    // An error happened.
+  });
+}
+
+if(user !== null){
+  const displayName = user.displayName;
+  const email = user.email;
+  const photoURL = user.photoURL;
+  const emailVerified = user.emailVerified;
+}else{
+  //user is not logged in 
+}
+
+async function getUser() {
+  const ref = doc(db, "users", auth.currentUser.uid);
+  console.log("ref",ref)
+  return ref; //if you need the user reference
 }
