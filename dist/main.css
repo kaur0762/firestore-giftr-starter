@@ -52,16 +52,6 @@ header button{
   -ms-border-radius: var(--radii);
   -o-border-radius: var(--radii);
 }
-header div{
-  display: flex;
-  justify-content: space-between;
-}
-main {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: flex-start;
-}
 main > section {
   flex-basis: 50%;
   flex-grow: 1;
@@ -70,7 +60,11 @@ main > section {
 section.ideas {
   min-height: 100vh;
   padding-left: 1rem;
-  border-left: 1px solid var(--light-color);
+  border-top: 1px solid var(--light-color);
+  padding-top: 2rem;
+}
+section.people{
+  padding-top: 2rem;
 }
 section h2 {
   font-size: 2rem;
@@ -83,9 +77,9 @@ section h2 > button {
   margin-right: 4rem;
   margin-left: 1rem;
   padding: 0.1rem 2rem;
-  border: 1px solid var(--very-light-color);
-  background-color: var(--dark-color);
-  color: #fff;
+  border: 1px solid var(--dark-color);
+  background-color: #fff;
+  color: var(--dark-color);
   border-radius: var(--radii);
   cursor: pointer;
   -webkit-border-radius: var(--radii);
@@ -102,7 +96,7 @@ ul {
   cursor: pointer;
 }
 .person-list li.selected {
-  background-color: var(--very-light-color);
+  background-color: var(--light-color);
 }
 .person-list p.name {
   font-size: 1.2rem;
@@ -131,17 +125,10 @@ ul {
 
 .idea-list li.idea {
   border: 1px solid #005A5B;
-  /* border-radius: var(--radii); */
   margin: 1rem 0;
   display: grid;
-  /*usenamedgridareas*/
   grid-template-areas: 'tab top' 'tab bottom';
   grid-template-columns: 1fr 4fr;
-  /* background-color: var(--very-light-color); */
-  /* -webkit-border-radius: var(--radii);
-  -moz-border-radius: var(--radii);
-  -ms-border-radius: var(--radii);
-  -o-border-radius: var(--radii); */
 }
 .idea-list .idea label {
   font-size: 0.8rem;
@@ -156,9 +143,6 @@ ul {
 .idea-list .idea label:has(input[type='checkbox']:checked) {
   color: #555;
 }
-/* .idea-list .idea [type='checkbox'] {
-  accent-color: var(--light-color);
-} */
 .idea-list p.title {
   font-size: 1.2rem;
   font-weight: 400;
@@ -289,4 +273,21 @@ section.overlayIdea.active {
   background-color: hsla(0, 0%, 0%, 0.8);
   justify-content: center;
   align-items: center;
+}
+
+@media (min-width: 510px) {
+  header div{
+    display: flex;
+    justify-content: space-between;
+  } 
+  main {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+  section.ideas {
+    border-top: 0px;
+    border-left: 1px solid var(--light-color);
+  }
 }

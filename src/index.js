@@ -1,7 +1,7 @@
 import { async } from '@firebase/util';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, query, where, doc, getDocs, getDoc, addDoc, setDoc, orderBy, onSnapshot, deleteDoc, updateDoc } from 'firebase/firestore';
-import { getAuth, signInWithPopup, signOut,createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, GithubAuthProvider, setPersistence, browserSessionPersistence, signInWithRedirect, getRedirectResult, signInWithCredential} from "firebase/auth";
+import { getFirestore, collection, query, where, doc, getDocs, addDoc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { getAuth, signInWithPopup, signOut,onAuthStateChanged, GithubAuthProvider} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCtjyPJ7LqQUQZgiy1uxYcTPAj_p6zE4WM",
@@ -63,23 +63,32 @@ function loadData(){
 /* CODE FOR PEOPLE */
 
 async function getPeople(){
-  const userRef = getUser();
+  const userRef = await getUser();
+  // console.log(userRef);
+  // console.log(people);
   //call this from DOMContentLoaded init function 
   //the db variable is the one created by the getFirestore(app) call.
-  const peopleCollectionRef = collection(db, "people"); //collection we want to query
+  // const peopleCollectionRef = collection(db, "people"); //collection we want to query
   const docs = query(
-    peopleCollectionRef,
+    collection(db,"people"),
     where('owner', '==', userRef)
   );
-  const querySnapshot = await getDocs(docs);
+  // console.log("Docs", docs)
+  // const querySnapshot = await getDocs(docs);
+  const querySnapshot = await getDocs(collection(db, 'people'),where('owner','==',userRef));
+  // console.log("q ",querySnapshot)
   querySnapshot.forEach((doc) => {
+    // console.log("doc ",doc)
     //every `doc` object has a `id` property that holds the `_id` value from Firestore.
     //every `doc` object has a doc() method that gives you a JS object with all the properties
     const data = doc.data();
     const id = doc.id;
     people.push({id, ...data});
   });
-  selectedPersonId = buildPeople(people);
+  console.log(people)
+  if(people.length>0){
+    selectedPersonId = buildPeople(people);
+  }
 
   let li = document.querySelector(`[data-id="${selectedPersonId}"]`);
   li.click();
@@ -100,7 +109,7 @@ function buildPeople(people){
             <button class="delete"> Delete </button>
           </li>`;
   }).join('');
-
+console.log(people[0])
   let selected = people[0].id;
   return selected;
 }
@@ -427,7 +436,7 @@ onAuthStateChanged(auth, (user) => {
   if (user) {
     // User is signed in
     const uid = user.uid;
-
+    
     loadData();
 
     console.log("signed in")
@@ -484,6 +493,7 @@ if(user !== null){
 }
 
 async function getUser() {
-  const ref = doc(db, "users", FirebaseAuth.instance.currentUser.uid);
+  const ref = doc(db, "users", auth.currentUser.uid);
+  console.log("ref",ref)
   return ref; //if you need the user reference
 }
